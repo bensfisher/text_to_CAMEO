@@ -45,7 +45,7 @@ Chile	CHL	155
 China	CHN	710
 Colombia	COL	100
 Comoros	COM	581
-Congo	COG	490
+Congo	COG	484
 Cook Islands	COK	000
 Cook Island	COK	000
 Costa Rica	CRI	094
@@ -67,7 +67,7 @@ Egypt	EGY	651
 El Salvador	SLV	092
 Equatorial Guinea	GNQ	411
 Eritrea	ERI	531
-Estonia		366
+Estonia	EST	366
 Ethiopia	ETH	530
 Faeroe Islands	DNKFRO	000
 Faroe Islands	DNKFRO	000
@@ -91,7 +91,7 @@ Guadeloupe	FRAGLP	000
 Guam	USAGUM	000
 Guatemala	GTM	090
 Guernsey	GGY	000
-Guinea	GIN	910
+Guinea	GIN	
 Guinea Bissau	GNB	404
 Guinea-Bissau	GNB	404
 Guyana	GUY	110
