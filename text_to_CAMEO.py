@@ -1,9 +1,9 @@
 """
 text_to_CAMEO.py
 
-This program takes data in the text-oriented format of the ICEWS .csv files and converts 
-this to a more conventional data format using the CAMEO codes. The conversion process is  
-described in detail in the file text_to_CAMEO_documentation.pdf. 
+This program takes data in the text-oriented format of the ICEWS .tab files downloaded from DataVerse study 28075 and converts 
+this to a more conventional data format using the CAMEO codes. The conversion process is described in detail in the file 
+text_to_CAMEO_documentation.pdf. 
 
 Repository for code: https://github.com/philip-schrodt/text_to_CAMEO
 
@@ -15,13 +15,12 @@ Requires:
 	filenames.txt
 
 SYSTEM REQUIREMENTS
-This program has been successfully run under Mac OS 10.6; it is standard Python 2.6 so it
-should also run in Unix or Windows. 
+This program has been successfully run under Mac OS 10.10; it is standard Python 2.6 so it should also run in Unix or Windows. 
 
 PROVENANCE:
 Programmer: Philip A. Schrodt
-			Parus Analytical Systems
-			State College, PA, 16801 U.S.A.
+			Parus Analytics
+			Charlottesville, VA 22901 U.S.A.
 			http://eventdata.parusanalytics.com
 
 Copyright (c) 2014	Philip A. Schrodt.	All rights reserved.
@@ -49,6 +48,7 @@ Report bugs to: schrodt735@gmail.com
 
 REVISION HISTORY:
 18-June-14:	Initial version
+30-March-15: Modified to work with DataVerse filenames
 
 ----------------------------------------------------------------------------------
 """
@@ -61,7 +61,7 @@ CAMEO_codefile = "CAMEO_codefile.txt"  # translates event text to CAMEO event co
 countryfile = "countrynames.txt"  # translates country names to ISO-3166-alpha-3 and COW numeric codes
 agentfile = "agentnames.txt"  # translates 'sectors' text to CAMEO agent codes
 filelist = "filelist.txt"  # list of files to convert
-outfile_prefix = "reduced.events"
+outfile_prefix = "reduced.ICEWS."
 
 """
 srccountry = {}  # ancillary dictionaries used to do frequency counts
@@ -212,7 +212,7 @@ while len(filename) > 0:
 		print "\aError: Could not find the input file", infile
 		sys.exit()	
 
-	fout = open(outfile_prefix+filename[-9:-3]+'txt','w')
+	fout = open(outfile_prefix+filename[:12]+'txt','w')
 
 	line = fin.readline()  # skip header
 	line = fin.readline()
