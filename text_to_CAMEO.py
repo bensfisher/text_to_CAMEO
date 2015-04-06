@@ -53,14 +53,12 @@ REVISION HISTORY:
 ----------------------------------------------------------------------------------
 """
 
-import sys
+import os,sys
 
 # ======== global initializations ========= #
 
-CAMEO_codefile = "CAMEO_codefile.txt"  # translates event text to CAMEO event codes
 countryfile = "countrynames.txt"  # translates country names to ISO-3166-alpha-3 and COW numeric codes
 agentfile = "agentnames.txt"  # translates 'sectors' text to CAMEO agent codes
-filelist = "filelist.txt"  # list of files to convert
 outfile_prefix = "reduced.ICEWS."
 
 """
@@ -69,8 +67,6 @@ tarcountry = {}
 events = {}
 """
 
-CAMEO_eventcodes = {}   # conversion dictionaries
-Missing_eventcodes = {} # debugging dictionaries used to check for phrases not in the files
 countrynames = {}
 Missing_names = {}
 sectornames = {}
@@ -78,15 +74,15 @@ sectorcounts = {}
 Missing_sectors = {}
 
 datefield = 1
-evtfield = 5
+evtfield = 6
 srcfield = 4
-tarfield = 9
+tarfield = 10
 srcagtfield = 3
-taragtfield = 8
-goldscorefield = 6
+taragtfield = 9
+goldscorefield = 7
 
 # ordered list of CAMEO agent codes to extract for the agent field: see documentation
-agentcodes = ['GOV','MIL','REB','OPP', 'PTY', 'COP','JUD','SPY','IGO','MED','EDU','BUS','CRM','CVL']
+agentcodes = ['GOV','MIL','REB','OPP', 'PTY', 'COP','JUD','SPY','IGO','MED','EDU','BUS','CRM','CVL','---']
 
 # ============ function definitions ================ #
 
@@ -101,14 +97,6 @@ def do_sub_count(thedict, phrase):
 		thedict[phrase]  += 1
 	else:
 		thedict[phrase]  = 1 
-
-def get_event_code(phrase):
-	if phrase in CAMEO_eventcodes:
-		return CAMEO_eventcodes[phrase]
-	else:
-#		print 'Missing:',phrase
-		do_sub_count(Missing_eventcodes, phrase)
-		return '' 
 
 def get_country_code(phrase):
 	if phrase in countrynames:
@@ -141,24 +129,24 @@ def print_sorted_dict(thedict):
 
 # ============ main program =============== #
 
-try: 
-	fin = open(CAMEO_codefile,'r') 
-except IOError:
-	print "\aError: Could not find the event code file", CAMEO_codefile
-	sys.exit()	
+#try: 
+#	fin = open(CAMEO_codefile,'r') 
+#except IOError:
+#	print "\aError: Could not find the event code file", CAMEO_codefile
+#	sys.exit()	
 
-caseno = 1
-line = fin.readline()
-while len(line) > 0:
-	if line.startswith('LABEL'):
-		part = line[line.find(' ')+1:].partition(' ')
-		CAMEO_eventcodes[part[2][:-1]] = part[0][:-1]
+#caseno = 1
+#line = fin.readline()
+#while len(line) > 0:
+#	if line.startswith('LABEL'):
+#		part = line[line.find(' ')+1:].partition(' ')
+#		CAMEO_eventcodes[part[2][:-1]] = part[0][:-1]
 #		print CAMEO_eventcodes[part[2][:-1]]
-		caseno += 1
+#		caseno += 1
 #	if caseno > 32: break   # debugging exit 		
-	line = fin.readline()
+#	line = fin.readline()
 	
-fin.close()
+#fin.close()
 #for k,v in CAMEO_eventcodes.iteritems(): print v,k
 #sys.exit()
 
@@ -197,27 +185,31 @@ fin.close()
 #sys.exit()
 
 
-try: 
-	fdir = open(filelist,'r') 
-except IOError:
-	print "\aError: Could not find the file list", filelist
-	sys.exit()	
+directory = os.getcwd()
+filelist = []
+for path, subdirs, files in os.walk(directory): # get list of ICEWS files based on .tab extension
+    for name in files:
+        if name.endswith((".tab")):
+            filelist.append(os.path.join(path,name)) 
 
-filename = fdir.readline().strip()
-while len(filename) > 0:
+for filename in filelist:
 	try: 
 		fin = open(filename,'r')
-		print 'Reading',filename  
+                filename = filename.rsplit('/') # get filename from filepath 
+                filename = filename[-1]
+                print 'Reading',filename
 	except IOError:
 		print "\aError: Could not find the input file", infile
 		sys.exit()	
-
 	fout = open(outfile_prefix+filename[:12]+'txt','w')
 
 	line = fin.readline()  # skip header
 	line = fin.readline()
 	caseno = 1
 	while len(line) > 0:
+                line = line.replace('\t\t','\tNULL\t') # replace missing field with 'NULL' 
+                line = line.replace('\t\t','\tNULL\t') # in case there are two missing fields in a row
+                line = line.replace('\t\t','\tNULL\t') # in case there are  missing fields in a row
 		field = line.split('\t')
 	#	for ka in range(len(field)): print ka, field[ka]
 		outlist = [field[datefield]]	
@@ -244,7 +236,7 @@ while len(filename) > 0:
 		outlist.append(reduce_sectors())
 		
 	#	do_count(events, evtfield)  # debug: checks distribution of events
-		camcode = get_event_code(field[evtfield].strip())
+		camcode = field[evtfield].strip()
 		outlist.append(camcode)
 		outlist.append(field[goldscorefield])
 		if camcode[0] == '2':  # determine the quad code
@@ -262,8 +254,8 @@ while len(filename) > 0:
 		outlist.append(quad)
 	
 	#	print outlist
-		if '---' not in outlist:
-			fout.write('\t'.join(outlist)+'\n')
+		#if '---' not in outlist:
+		fout.write('\t'.join(outlist)+'\n')
 		caseno += 1
 	#	if caseno > 16: sys.exit()   # debugging exit 		
 		line = fin.readline()
@@ -271,7 +263,7 @@ while len(filename) > 0:
 	fin.close()
 	fout.close()
 
-	filename = fdir.readline().strip()
+	#filename = fdir.readline().strip()
 
 """
 print_sorted_dict(events)   # code for printing frequencies 
@@ -301,6 +293,6 @@ print "=== MISSING PHRASES ====",  # code of printing missing phrases
 #print_sorted_dict(Missing_names)
 print_sorted_dict(Missing_sectors)
 """
-fdir.close()
+#fdir.close()
 print "Finished"
 
