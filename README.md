@@ -12,9 +12,7 @@ Requires:
 
 ::
 
-	CAMEO_codefile.txt
 	countrynames.txt
 	agentnames.txt
-	filenames.txt
 
 
