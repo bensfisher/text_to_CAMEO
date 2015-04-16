@@ -102,7 +102,7 @@ def get_country_code(phrase):
 	if phrase in countrynames:
 		return countrynames[phrase]
 	else:
-#		print 'Missing:',phrase
+#	    print 'Missing:',phrase
 		do_sub_count(Missing_names, phrase)
 		return '' 
 
@@ -216,8 +216,11 @@ for filename in filelist:
 
 	#	do_count(srccountry, srcfield)
 	#	do_count(tarcountry, tarfield)
-
-		outlist.extend(get_country_code(field[srcfield]))
+                if field[srcfield] in countrynames:
+                    outlist.extend(get_country_code(field[srcfield]))
+                else:
+                    outlist.append('---')
+                    outlist.append('---')
 		subfields = field[srcagtfield].split(',')
 		if subfields:
 			agentlist = []
@@ -225,8 +228,12 @@ for filename in filelist:
 				do_sub_count(sectorcounts, phrase)
 				agentlist.append(get_sector_code(phrase))
 		outlist.append(reduce_sectors())
-
-		outlist.extend(get_country_code(field[tarfield]))
+                
+                if field[tarfield] in countrynames:
+		    outlist.extend(get_country_code(field[tarfield]))
+                else:
+                    outlist.append('---')
+                    outlist.append('---')
 		subfields = field[taragtfield].split(',')
 		if subfields:
 			agentlist = []
