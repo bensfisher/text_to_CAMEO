@@ -220,7 +220,7 @@ for filename in filelist:
                     outlist.extend(get_country_code(field[srcfield]))
                 else:
                     outlist.append('---')
-                    outlist.append('---')
+                    outlist.append('000')
 		subfields = field[srcagtfield].split(',')
 		if subfields:
 			agentlist = []
@@ -233,7 +233,7 @@ for filename in filelist:
 		    outlist.extend(get_country_code(field[tarfield]))
                 else:
                     outlist.append('---')
-                    outlist.append('---')
+                    outlist.append('000')
 		subfields = field[taragtfield].split(',')
 		if subfields:
 			agentlist = []
